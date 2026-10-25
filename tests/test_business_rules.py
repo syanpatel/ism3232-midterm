@@ -1,9 +1,12 @@
 from business_rules import (
     calculate_license_cost,
     calculate_license_total,
+    format_license_line,
     get_seat_discount,
     gets_trainer,
+    largest_license,
     needs_contract_review,
+    total_licensed,
 )
 
 
@@ -72,3 +75,60 @@ def test_no_trainer_at_three_thousand_total():
 
 def test_trainer_above_three_thousand_total():
     assert gets_trainer(5, 3000.01) is True
+
+
+def test_total_licensed_adds_every_order():
+    orders = [
+        {"company": "Pine Books", "seat_price": 40.0, "seats": 5, "education": False},
+        {
+            "company": "Quarry School",
+            "seat_price": 35.0,
+            "seats": 12,
+            "education": True,
+        },
+    ]
+    assert round(total_licensed(orders), 2) == 710.6
+
+
+def test_total_licensed_empty_list_is_zero():
+    assert total_licensed([]) == 0.0
+
+
+def test_largest_license_returns_biggest_company():
+    orders = [
+        {"company": "Pine Books", "seat_price": 40.0, "seats": 5, "education": False},
+        {
+            "company": "Redwood Cargo",
+            "seat_price": 45.0,
+            "seats": 60,
+            "education": False,
+        },
+    ]
+    assert largest_license(orders) == "Redwood Cargo"
+
+
+def test_largest_license_tie_returns_first_in_list():
+    orders = [
+        {"company": "First", "seat_price": 40.0, "seats": 5, "education": False},
+        {"company": "Second", "seat_price": 40.0, "seats": 5, "education": False},
+    ]
+    assert largest_license(orders) == "First"
+
+
+def test_largest_license_empty_list_returns_empty_string():
+    assert largest_license([]) == ""
+
+
+def test_format_line_with_no_flags():
+    line = format_license_line("Pine Books", 260.0, False, False)
+    assert line == "Pine Books: $260.00 | contract review: no | trainer: no"
+
+
+def test_format_line_with_both_flags():
+    line = format_license_line("Summit College", 6300.0, True, True)
+    assert line == "Summit College: $6300.00 | contract review: yes | trainer: yes"
+
+
+def test_format_line_shows_two_decimal_places():
+    line = format_license_line("Test Co", 5.5, False, True)
+    assert line == "Test Co: $5.50 | contract review: no | trainer: yes"
