@@ -132,3 +132,23 @@ def test_format_line_with_both_flags():
 def test_format_line_shows_two_decimal_places():
     line = format_license_line("Test Co", 5.5, False, True)
     assert line == "Test Co: $5.50 | contract review: no | trainer: yes"
+
+
+def test_education_at_forty_nine_seats_still_gets_seven_percent():
+    assert get_seat_discount(49, education=True) == 0.07
+
+
+def test_education_below_ten_seats_gets_no_discount():
+    assert get_seat_discount(9, education=True) == 0.0
+
+
+def test_total_at_ten_seats_uses_seven_percent():
+    assert round(calculate_license_total(100.0, 10), 2) == 930.0
+
+
+def test_total_licensed_applies_discounts_to_each_order():
+    orders = [
+        {"company": "Big Co", "seat_price": 100.0, "seats": 10, "education": False},
+        {"company": "Small Co", "seat_price": 40.0, "seats": 5, "education": False},
+    ]
+    assert round(total_licensed(orders), 2) == 1190.0
