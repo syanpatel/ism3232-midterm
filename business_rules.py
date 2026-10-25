@@ -37,3 +37,13 @@ def calculate_license_total(
     if discounted <= ONBOARDING_FEE_LIMIT:
         discounted += ONBOARDING_FEE
     return discounted
+
+
+def needs_contract_review(total: float) -> bool:
+    """Return True when the license total needs a contract review."""
+    return total > CONTRACT_REVIEW_LIMIT
+
+
+def gets_trainer(seats: int, total: float) -> bool:
+    """Return True when the order gets a dedicated trainer."""
+    return seats >= TRAINER_SEATS_LIMIT or total > TRAINER_TOTAL_LIMIT
